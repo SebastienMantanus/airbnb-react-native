@@ -48,7 +48,7 @@ export default function SignUpScreen({ setToken }) {
         alert("Création de compte ratée");
       }
     } else {
-      console.log("mots de passes pas identiques");
+      setPasswordMatch(false);
     }
   };
 
@@ -120,7 +120,11 @@ export default function SignUpScreen({ setToken }) {
             />
           </View>
 
-          <View></View>
+          <View>
+            {!passwordMatch && (
+              <Text>Les mots de passe ne correspondent pas !</Text>
+            )}
+          </View>
           <View>
             <TouchableOpacity
               style={styles.buttonView}
