@@ -19,14 +19,36 @@ import logo from "../assets/logo.png";
 
 export default function SignInScreen({ setToken }) {
   const { height } = useWindowDimensions();
-
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [failConnexion, setFailConnexion] = useState();
+  const [missingEmail, setMissingEmail] = useState();
+  const [missingPassword, setMissingPassword] = useState();
+
+  // Sending connexion to back and redirect user
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(
+        "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/log_in",
+        {
+          email,
+          password,
+        }
+      );
+      const userToken = response.data.token;
+      setToken(userToken);
+      alert("Connexion réussie");
+    } catch (error) {
+      setFailConnexion(true);
+      console.log(error.response);
+      alert("Connexion ratée");
+    }
+  };
 
   return (
     <SafeAreaView>
-      <KeyboardAwareScrollView style={{ borderColor: "red", borderWidth: 3 }}>
+      <KeyboardAwareScrollView>
         <View
           style={[
             styles.mainContainer,
@@ -43,7 +65,7 @@ export default function SignInScreen({ setToken }) {
               style={styles.textInput}
               placeholder="email"
               value={email}
-              onChange={(text) => {
+              onChangeText={(text) => {
                 setEmail(text);
               }}
             />
@@ -53,18 +75,23 @@ export default function SignInScreen({ setToken }) {
               placeholder="password"
               value={password}
               secureTextEntry={true}
-              onChange={(text) => {
+              onChangeText={(text) => {
                 setPassword(text);
               }}
             />
           </View>
 
           <View>
+            {missingEmail && <Text>Il faut un email valide !</Text>}
+            {missingPassword && <Text>Il faut un mot de passe valide !</Text>}
+            {failConnexion && <Text>identifiants incorrects</Text>}
             <TouchableOpacity
               style={styles.buttonView}
               onPress={async () => {
-                const userToken = "secret-token";
-                setToken(userToken);
+                handleSubmit();
+
+                // const userToken = "secret-token";
+                // setToken(userToken);
               }}
             >
               <Text style={[styles.greyText, styles.mediumSizeFont]}>
@@ -97,11 +124,10 @@ export default function SignInScreen({ setToken }) {
 const styles = StyleSheet.create({
   mainContainer: {
     paddingVertical: 30,
-    // height: 880,
     alignItems: "center",
     justifyContent: "space-around",
-    borderColor: "red",
-    borderWidth: 3,
+    // borderColor: "red",
+    // borderWidth: 3,
   },
 
   splashLogo: {
@@ -120,8 +146,8 @@ const styles = StyleSheet.create({
 
   form: {
     marginTop: 0,
-    borderColor: "blue",
-    borderWidth: 3,
+    // borderColor: "blue",
+    // borderWidth: 3,
   },
 
   textInput: {
