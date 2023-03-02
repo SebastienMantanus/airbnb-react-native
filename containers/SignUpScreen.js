@@ -16,6 +16,7 @@ import logo from "../assets/logo.png";
 import { useState } from "react";
 import axios from "axios";
 import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignUpScreen({ setToken }) {
   const { height } = useWindowDimensions();
@@ -25,30 +26,37 @@ export default function SignUpScreen({ setToken }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
-  const [passwordMatch, setPasswordMatch] = useState();
+  const [error, setError] = useState("");
   const [description, setDescription] = useState("");
 
   const handleSubmit = async () => {
-    if (password === passwordCheck) {
-      try {
-        const response = await axios.post(
-          "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/sign_up",
-          {
-            email,
-            username,
-            description,
-            password,
-          }
-        );
-        const userToken = "secret-token";
-        setToken(userToken);
-        alert("Compte Créé !");
-      } catch (error) {
-        console.log(error.response);
-        alert("Création de compte ratée");
+    if (email && username && password && passwordCheck) {
+      if (password === passwordCheck) {
+        setError("");
+        try {
+          const response = await axios.post(
+            "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/sign_up",
+            {
+              email,
+              username,
+              description,
+              password,
+            }
+          );
+          console.log(response.data);
+          setToken(response.data.token);
+          await AsyncStorage.setItem("token", response.data.token);
+
+          alert("Compte Créé !");
+        } catch (error) {
+          console.log(error.response.data);
+          alert("Création de compte ratée");
+        }
+      } else {
+        setError("Les mots de passe ne correspondent pas !");
       }
     } else {
-      setPasswordMatch(false);
+      setError("tous les champs doivent être remplis");
     }
   };
 
@@ -120,11 +128,7 @@ export default function SignUpScreen({ setToken }) {
             />
           </View>
 
-          <View>
-            {!passwordMatch && (
-              <Text>Les mots de passe ne correspondent pas !</Text>
-            )}
-          </View>
+          <View>{error && <Text>{error}</Text>}</View>
           <View>
             <TouchableOpacity
               style={styles.buttonView}

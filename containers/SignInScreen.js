@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/core";
 import { useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   Button,
@@ -38,6 +39,7 @@ export default function SignInScreen({ setToken }) {
       );
       const userToken = response.data.token;
       setToken(userToken);
+      await AsyncStorage.setItem("token", userToken);
       alert("Connexion réussie");
     } catch (error) {
       setFailConnexion(true);
@@ -88,7 +90,15 @@ export default function SignInScreen({ setToken }) {
             <TouchableOpacity
               style={styles.buttonView}
               onPress={async () => {
-                handleSubmit();
+                if (email) {
+                  if (password) {
+                    handleSubmit();
+                  } else {
+                    setMissingPassword(true);
+                  }
+                } else {
+                  setMissingEmail(true);
+                }
 
                 // const userToken = "secret-token";
                 // setToken(userToken);

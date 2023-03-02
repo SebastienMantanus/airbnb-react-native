@@ -92,7 +92,7 @@ export default function App() {
                           headerTitleStyle: { color: "white" },
                         }}
                       >
-                        {() => <HomeScreen />}
+                        {() => <HomeScreen setIsLoading={setIsLoading} />}
                       </Stack.Screen>
 
                       <Stack.Screen
