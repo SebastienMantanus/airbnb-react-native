@@ -1,13 +1,14 @@
 import { useNavigation } from "@react-navigation/core";
 import axios from "axios";
-import { Button, Text, View } from "react-native";
+import { Button, Text, View, FlatList, Image } from "react-native";
 import { useState, useEffect } from "react";
-import { FlatList } from "react-native-web";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+
   const [response, setResponse] = useState();
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -22,7 +23,9 @@ export default function HomeScreen() {
     };
     getData();
   }, []);
+
   console.log(response);
+
   return (
     !isLoading && (
       <View>
@@ -30,7 +33,11 @@ export default function HomeScreen() {
           data={response}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => {
-            <Text>toto</Text>;
+            return (
+              <View>
+                <Text>{item.title}</Text>
+              </View>
+            );
           }}
         />
         <Text>Welcome home!</Text>
