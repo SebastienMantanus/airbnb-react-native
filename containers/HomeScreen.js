@@ -1,7 +1,8 @@
 import { useNavigation } from "@react-navigation/core";
 import axios from "axios";
-import { Button, Text, View, FlatList, Image } from "react-native";
+import { Button, Text, View, FlatList, Image, StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
+import logo from "../assets/logo.png";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -24,19 +25,27 @@ export default function HomeScreen() {
     getData();
   }, []);
 
-  console.log(response);
-
   return (
     !isLoading && (
       <View>
+        <Image source={logo} style={styles.splashLogo}></Image>
         <FlatList
           data={response}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => {
+            const newArraw = [...item.photos];
+            const picture = newArraw.shift();
+            const pictureUrl = picture.url;
+
             return (
-              <View>
+              <>
+                <Image
+                  source={{ uri: pictureUrl }}
+                  style={styles.roomPictures}
+                  resizeMode="cover"
+                ></Image>
                 <Text>{item.title}</Text>
-              </View>
+              </>
             );
           }}
         />
@@ -51,3 +60,17 @@ export default function HomeScreen() {
     )
   );
 }
+
+const styles = StyleSheet.create({
+  splashLogo: {
+    resizeMode: "contain",
+    width: 50,
+    height: 25,
+    marginBottom: 20,
+  },
+
+  roomPictures: {
+    height: 200,
+    width: "100%",
+  },
+});
